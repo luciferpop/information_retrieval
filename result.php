@@ -4,7 +4,7 @@
 	$q = new query();
 	$type = $_POST['type'];
 	$query_str = $_POST['query'];
-	$terms = $q->get_posting($query_str, $type); 
+	$terms = $q->get_posting($query_str, $type);
 ?>
 <!DOCTYPE html>
 <html>

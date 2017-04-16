@@ -3,10 +3,10 @@
 		
 		// Get database connection
 		function get_conn() {
-			$servername = "localhost";
-		    $username = "root";
-		    $password = "123";
-		    $dbname = "ir_test";
+		    $servername = "mysql1.cs.clemson.edu";
+		    $username = "infrtrvl_6ymy";
+		    $password = "z530628Z";
+		    $dbname = "info_retrieval_lwsh";
 
 		    // Create connection
 		    $conn = mysqli_connect($servername, $username, $password, $dbname);
@@ -38,8 +38,7 @@
 					return $this->intersection($posting, 0, sizeof($posting)-1);
 					break;
 				case 'biword':
-					array_push($keywords, $str);
-					$posting = $this->fetch_res_bi($keywords, $type);
+					return $this->fetch_res_bi($str, $type);
 					break;
 			}
 		}
@@ -49,13 +48,17 @@
 			$posting = [];
 			$conn = $this->get_conn();
 
-			$sql = 'SELECT * FROM '.$type.' WHERE term='.$keywords.'';
+			$sql = 'SELECT * FROM '.$type.' WHERE term="'.$keywords.'"';
 			$res = mysqli_query($conn, $sql);
 			while ($row = mysqli_fetch_array($res)) {
-				array_push($posting, $row['posting'])
+				$posting = $row['posting'];
 			}
 
-			return this->to_array($posting);
+			$temp = preg_split("/\D+/", $posting, -1, PREG_SPLIT_NO_EMPTY);
+			// Sort the array in ascending order by file name
+			sort($temp);
+			return $temp;
+
 			$conn.close();
 		}
 
