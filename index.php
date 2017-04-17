@@ -1,5 +1,8 @@
 <?php
-
+	if (!isset($_SESSION)) {
+		session_start();
+	}
+	session_destroy();
 ?>
 
 <!DOCTYPE html>
@@ -40,7 +43,7 @@
     
 </div>
 
-<p class="credit"><a href="">Lihua Zhang & Yameng Sun | Zine EOOD © 2009-2017</a></p>
+<p class="credit"><a href="#">Lihua Zhang & Yameng Sun | Zine EOOD © 2009-2017</a></p>
 
 </body>
 </html>

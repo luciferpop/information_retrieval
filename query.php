@@ -3,10 +3,14 @@
 		
 		// Get database connection
 		function get_conn() {
-		    $servername = "mysql1.cs.clemson.edu";
-		    $username = "infrtrvl_6ymy";
-		    $password = "z530628Z";
-		    $dbname = "info_retrieval_lwsh";
+		    // $servername = "mysql1.cs.clemson.edu";
+		    // $username = "infrtrvl_6ymy";
+		    // $password = "z530628Z";
+		    // $dbname = "info_retrieval_lwsh";
+		    $servername = "localhost";
+		    $username = "root";
+		    $password = "123";
+		    $dbname = "ir_test";
 
 		    // Create connection
 		    $conn = mysqli_connect($servername, $username, $password, $dbname);
