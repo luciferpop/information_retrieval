@@ -1,4 +1,5 @@
 <?php
+	error_reporting(0);
 	if (!isset($_SESSION)) {
 		session_start();
 	}
@@ -19,7 +20,7 @@
 
 <div id="page">
 
-	<h2>Reuters News Retrieval System</h2>
+	<h1>Reuters News Retrieval System</h1>
 
     <form id="searchForm" method="post" action="result.php" >
 		<fieldset>
@@ -38,8 +39,6 @@
             
         </fieldset>
     </form>
-
-    <div id="resultsDiv"></div>
     
 </div>
 
