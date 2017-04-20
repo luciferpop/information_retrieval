@@ -53,10 +53,12 @@
 			while ($row = mysqli_fetch_array($res)) {
 				$posting = $row['posting'];
 			}
-
+			if (empty($posting)) {
+				return;
+			}
 			$temp = preg_split("/\D+/", $posting, -1, PREG_SPLIT_NO_EMPTY);
 			// Sort the array in ascending order by file name
-			sort($temp);
+			// sort($temp);
 			return $temp;
 
 			$conn.close();
