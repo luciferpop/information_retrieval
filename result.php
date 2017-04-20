@@ -60,7 +60,7 @@
 					    echo "<p>".$row['paragraph']."</p>";
 					    echo "<a>".$row['filename']."</a>";
 					}
-					echo "<h3>";
+					echo "<div class='foot'>";
 					if($page > 1){
 					    $prePage = $page - 1;
 					    echo "<a href='result.php?page=$prePage'>pre</a> ";
@@ -71,7 +71,7 @@
 					    echo "{$page} / {$total} pages";
 					  }
 
-					echo "</h3>";
+					echo "</div>";
 				?>
 
 			</div>
