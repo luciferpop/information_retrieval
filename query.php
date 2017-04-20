@@ -35,15 +35,11 @@
 						return $temp;
 					}
 					$posting = $this->to_array($temp);
-					// Sort the posting array according to the length of each posting
-					usort($posting, function($a, $b) {
-						return sizeof($a) - sizeof($b);
-					});
 					return $this->intersection($posting, 0, sizeof($posting)-1);
-					break;
 				case 'biword':
 					return $this->fetch_res_bi($str, $type);
-					break;
+				case 'positional':
+					return;
 			}
 		}
 
@@ -109,11 +105,11 @@
 			$res = [];
 			$i = 0; $j = 0;
 			while ($i < sizeof($left) && $j < sizeof($right)) {
-				if (strcmp($left[$i], $right[$j]) == 0) {
+				if ($left[$i] === $right[$j]) {
 					array_push($res, $left[$i]);
 					$i++;
 					$j++;
-				} else if (strcmp($left[$i], $right[$j]) < 0) {
+				} else if ($left[$i] < $right[$j]) {
 					$i++;
 				} else {
 					$j++;

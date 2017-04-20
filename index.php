@@ -35,6 +35,10 @@
                 
                 <input type="radio" name="type" value="biword"/>
                 <label for="biwordSearch">Biword</label>
+
+                <input type="radio" name="type" value="positional"/>
+                <label for="positionalSearch">Positional</label>
+
 			</div>
             
         </fieldset>
