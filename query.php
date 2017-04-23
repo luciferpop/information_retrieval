@@ -52,7 +52,7 @@
 			$i = 0;
 			foreach ($result as $key => $value) {
 				if ($i < 20) {
-					$res[$i] = $key;
+					array_push($res, $key);
 					$i++;
 				} else {
 					break;
@@ -75,6 +75,7 @@
 				}
 				$map[$term][$temp[0]] = $temp[1];
 			}
+			$conn.close();
 			return $map;
 		}
 
@@ -145,7 +146,8 @@
 					$result[$key] = $sim;
 				} 
 			}
-			$this->get_top($result);
+			$conn.close();
+			return this->get_top($result);
 		}
 
 		// Fetch results for biword query
@@ -164,9 +166,8 @@
 			$temp = preg_split("/\D+/", $posting, -1, PREG_SPLIT_NO_EMPTY);
 			// Sort the array in ascending order by file name
 			// sort($temp);
-			return $temp;
-
 			$conn.close();
+			return $temp;
 		}
 
 		// Fetch results for uniword query
@@ -190,8 +191,8 @@
 					array_push($posting, $row['posting']);
 				}
 			}
-			return $posting;
 			$conn.close();
+			return $posting;
 		}
 
 		// Using Divide and Conqure do intersection for the given postings (uniword query only)
