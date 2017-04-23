@@ -25,10 +25,10 @@
 		// Return posting from the SQL query
 		function get_posting($str, $type) {
 			$keyword = [];
+			$keywords = preg_split('/[\s,]+/', $str);
 
 			switch($type) {
 				case 'uniword':
-					$keywords = preg_split('/[\s,]+/', $str);
 					$temp = $this->fetch_res_uni($keywords, $type);
 					// Just return an empty array when query result has empty 
 					if (empty($temp)) {
@@ -40,7 +40,112 @@
 					return $this->fetch_res_bi($str, $type);
 				case 'positional':
 					return;
+				case 'ranked':
+					$this->fetch_res_ra($keywords);
 			}
+		}
+
+		// Return top 20 results
+		function get_top($result) {
+			$res = [];
+			arsort($result);
+			$i = 0;
+			foreach ($result as $key => $value) {
+				if ($i < 20) {
+					$res[$i] = $key;
+					$i++;
+				} else {
+					break;
+				}
+			}
+			return $res;
+		}
+
+		// Return a hashmap which key is term and value is another hashmap of <fileName, tf-idf> pair
+		function get_map($keywords) {
+			$map = array();
+			$conn = $this->get_conn();
+			$sql = "SELECT * FROM tfidf WHERE term IN ('".implode("','",$keywords)."')";
+			$res = mysqli_query($conn, $sql);
+			while ($row = mysqli_fetch_row($res)) {
+				$term = $row['0'];
+				$temp = preg_split("/\t/", $row['1']);
+				if (!array_key_exists($term, $map)) {
+					$map[$term] = array();
+				}
+				$map[$term][$temp[0]] = $temp[1];
+			}
+			return $map;
+		}
+
+		// Fetch results for ranked query
+		function fetch_res_ra($keywords) {
+			$conn = $this->get_conn();
+			$result = array();
+
+			// Calculate tfidf vector for the query
+			$tfidf = array();
+			foreach ($keywords as $keyword) {
+				if (array_key_exists($keyword, $tfidf)) {
+					$tfidf[$keyword] = $tfidf[$keyword] + 1;
+				} else {
+					$tfidf[$keyword] = 1;
+				}
+			}
+
+			foreach ($tfidf as $key => $feq) {
+				// Calculate tf first
+				$tfidf[$key] = $feq / sizeof($keywords);
+				// Retrieve idf for query terms from database
+				$sql = "SELECT idf FROM idf WHERE term='".$key."'";
+				$res = mysqli_query($conn, $sql);
+				$row = mysqli_fetch_row($res);
+				$idf = preg_split("/[!\t]+/", $row[0], -1, PREG_SPLIT_NO_EMPTY);
+				// Calculate tfidf for key
+				$tfidf[$key] = $idf[0] * $tfidf[$key];
+			}
+
+			// Calculate the query vector length
+			$query_len = 0.0;
+			foreach ($tfidf as $key => $value) {
+				$query_len += $value * $value;
+			}
+			$query_len = sqrt($query_len);
+			
+			$mapArr = $this->get_map($keywords);
+			foreach ($mapArr as $map => $subMap) {
+				foreach ($subMap as $key => $value) {
+					if (array_key_exists($key, $res))
+						continue;
+					$tfidf_doc = array();
+					foreach ($mapArr as $term => $file) {
+						$val = 0.0;
+						if (array_key_exists($key, $file)) {
+							$val = $file[$key];
+						}
+						array_push($tfidf_doc, $val);
+					}
+					// Calculate doc vector length
+					$doc_len = 0.0;
+					foreach ($tfidf_doc as $idx => $value) {
+					 	$doc_len += $value * $value;
+					}
+					$doc_len = sqrt($doc_len);
+
+					// Calculate dot product for query and document
+					$dot_product = 0.0;
+					$i = 0;
+					foreach ($tfidf as $k => $v) {
+						$dot_product = $dot_product + $v * $tfidf_doc[$i];
+						$i++;
+					}
+
+					// Calculate cosine similarity
+					$sim = $dot_product / ($query_len * $doc_len);
+					$result[$key] = $sim;
+				} 
+			}
+			$this->get_top($result);
 		}
 
 		// Fetch results for biword query

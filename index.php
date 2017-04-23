@@ -39,6 +39,9 @@
                 <input type="radio" name="type" value="positional"/>
                 <label for="positionalSearch">Positional</label>
 
+                <input type="radio" name="type" value="ranked"/>
+                <label for="rankedSearch">Ranked</label>
+
 			</div>
             
         </fieldset>
