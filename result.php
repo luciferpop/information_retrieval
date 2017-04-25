@@ -77,7 +77,7 @@
 			</div>
 		</div>
 
-	<p class="credit"><a href="index.php">Lihua Zhang & Yameng Sun | Zine EOOD © 2009-2017</a></p>
+	<p class="credit"><a href="index.php">Lihua Zhang & Yameng Sun | Clemson University 2017</a></p>
 
 </body>
 

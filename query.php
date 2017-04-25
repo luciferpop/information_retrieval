@@ -41,6 +41,9 @@
 					return;
 				case 'ranked':
 					return $this->fetch_res_ra($keywords);
+				case 'bm25':
+					return $this->fetch_res_bm25($keywords);
+
 			}
 		}
 
@@ -61,10 +64,10 @@
 		}
 
 		// Return a hashmap which key is term and value is another hashmap of <fileName, tf-idf> pair
-		function get_map($keywords) {
+		function get_map($keywords, $table) {
 			$map = array();
 			$conn = $this->get_conn();
-			$sql = "SELECT * FROM tfidf WHERE term IN ('".implode("','",$keywords)."')";
+			$sql = "SELECT * FROM ".$table." WHERE term IN ('".implode("','",$keywords)."')";
 			$res = mysqli_query($conn, $sql);
 			while ($row = mysqli_fetch_row($res)) {
 				$term = $row['0'];
@@ -75,6 +78,61 @@
 				$map[$term][$temp[0]] = $temp[1];
 			}
 			return $map;
+		}
+
+		// Fetch results for BM25
+		function fetch_res_bm25($keywords) {
+			$k1 = 1.2;
+			$b = 0.75;
+			$conn = $this->get_conn();
+			$result = array();
+			// Fetch the idf vector for the query
+			$idf_qd = array();
+			foreach ($keywords as $keyword) {
+				$sql = "SELECT idf FROM idf WHERE term = '".$keyword."'";
+				$res = mysqli_query($conn, $sql);
+				$row = mysqli_fetch_row($res);
+				$idf = preg_split("/[!\t]+/", $row[0], -1, PREG_SPLIT_NO_EMPTY);
+				array_push($idf_qd, $idf[0]);
+			}
+
+			// Fetch the tf and document length vector, and save the Okapi BM25 score
+			$mapArr = $this->get_map($keywords, "tf");
+			foreach ($mapArr as $map => $subMap) {
+				foreach ($subMap as $key => $value) {
+					if (array_key_exists($key, $result))
+						continue;
+					$tf_qd = array();
+					foreach ($mapArr as $term => $file) {
+						$val = 0.0;
+						if (array_key_exists($key, $file)) {
+							$val = $file[$key];
+						}
+						array_push($tf_qd, $val);
+					}
+					//print_r($tf_qd);
+					// Fetch the document length
+					$sql_len = "SELECT length FROM length WHERE filename = '".$key."'";
+					$res_len = mysqli_query($conn, $sql_len);
+					$row_len = mysqli_fetch_row($res_len);
+					$length = $row_len['0'];
+					
+					// Calculate Okapi BM25 score
+					$score = 0;
+					for ($i=0; $i<sizeof($idf_qd); $i++) {
+						$left = $idf_qd[$i] * $tf_qd[$i] * ($k1+1);
+						$right = $tf_qd[$i] + $k1 * (1.0 - $b + $b * $length / 3.0);
+						if ($left == 0 || $right == 0) {
+							continue;
+						}
+						$score += $left / $right;
+					}
+
+					$result[$key] = $score;
+				} 
+			}
+
+			return $this->get_top($result);
 		}
 
 		// Fetch results for ranked query
@@ -111,10 +169,10 @@
 			}
 			$query_len = sqrt($query_len);
 			
-			$mapArr = $this->get_map($keywords);
+			$mapArr = $this->get_map($keywords, "tfidf");
 			foreach ($mapArr as $map => $subMap) {
 				foreach ($subMap as $key => $value) {
-					if (array_key_exists($key, $res))
+					if (array_key_exists($key, $result))
 						continue;
 					$tfidf_doc = array();
 					foreach ($mapArr as $term => $file) {
