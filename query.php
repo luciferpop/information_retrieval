@@ -18,7 +18,6 @@
 		    if (!$conn) {
 		        die("Connection failed: " . mysqli_connect_error());
 		    }
-
 		    return $conn;
 		}
 
@@ -75,7 +74,6 @@
 				}
 				$map[$term][$temp[0]] = $temp[1];
 			}
-			$conn.close();
 			return $map;
 		}
 
@@ -146,8 +144,7 @@
 					$result[$key] = $sim;
 				} 
 			}
-			$conn.close();
-			return this->get_top($result);
+			return $this->get_top($result);
 		}
 
 		// Fetch results for biword query
@@ -166,7 +163,6 @@
 			$temp = preg_split("/\D+/", $posting, -1, PREG_SPLIT_NO_EMPTY);
 			// Sort the array in ascending order by file name
 			// sort($temp);
-			$conn.close();
 			return $temp;
 		}
 
@@ -191,7 +187,6 @@
 					array_push($posting, $row['posting']);
 				}
 			}
-			$conn.close();
 			return $posting;
 		}
 

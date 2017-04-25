@@ -304,3 +304,8 @@ p {
 	font-size: 13px;
 	text-align: center;
 }
+
+h2.detail { color: #ffffff; font-family: 'Raleway',sans-serif; font-size: 32px; font-weight: 800; line-height: 72px; margin: 60px 0 20px 0; text-align: center; }
+
+
+p.detail { color: #f8f8f8; font-family: 'Raleway',sans-serif; font-size: 18px; font-weight: 500; line-height: 32px; padding: 0 250px 0 250px; text-align: center;}

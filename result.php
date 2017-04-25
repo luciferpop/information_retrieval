@@ -58,7 +58,7 @@
 					while($row = mysqli_fetch_array($res)){
 					    echo "<h2><a>".$row['title']."</a></h2>";
 					    echo "<p>".$row['paragraph']."</p>";
-					    echo "<a>".$row['filename']."</a>";
+					    echo "<a href='detail.php?id=".$row['filename']."' target='_blank'>".$row['filename']."</a>";
 					}
 					echo "<div class='foot'>";
 					if($page > 1){
