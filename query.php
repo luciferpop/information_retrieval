@@ -40,7 +40,7 @@
 				case 'positional':
 					return;
 				case 'ranked':
-					$this->fetch_res_ra($keywords);
+					return $this->fetch_res_ra($keywords);
 			}
 		}
 
