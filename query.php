@@ -115,7 +115,7 @@
 					$sql_len = "SELECT length FROM length WHERE filename = '".$key."'";
 					$res_len = mysqli_query($conn, $sql_len);
 					$row_len = mysqli_fetch_row($res_len);
-					$length = $row_len['0'];
+					$length = $len[$key];
 					
 					// Calculate Okapi BM25 score
 					$score = 0;
